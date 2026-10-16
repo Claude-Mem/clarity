@@ -1,0 +1,19 @@
+{
+  "name": "clarity",
+  "version": "0.1.0",
+  "description": "When a conversation goes sideways, the agent stops, writes out what it thinks you want, and asks \"Is this it? Yes, no, or modify?\" before doing anything else. Includes a hook that notices cursing and shouting.",
+  "author": {
+    "name": "Alex Newman"
+  },
+  "homepage": "https://github.com/claude-mem/clarity",
+  "repository": "https://github.com/claude-mem/clarity",
+  "license": "MIT",
+  "keywords": [
+    "clarity",
+    "frustration",
+    "prompting",
+    "skills",
+    "hooks",
+    "claude-mem"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "description": "clarity: when a prompt shows frustration, remind the agent to stop, restate what you want, and ask before acting",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/frustration-check.sh\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

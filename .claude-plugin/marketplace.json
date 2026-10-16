@@ -1,0 +1,17 @@
+{
+  "name": "clarity",
+  "owner": {
+    "name": "Alex Newman"
+  },
+  "metadata": {
+    "description": "Clarity: stop, restate, and confirm when a conversation goes sideways"
+  },
+  "plugins": [
+    {
+      "name": "clarity",
+      "version": "0.1.0",
+      "source": "./",
+      "description": "When a conversation goes sideways, the agent stops, writes out what it thinks you want, and asks \"Is this it? Yes, no, or modify?\" before doing anything else."
+    }
+  ]
+}
