@@ -61,7 +61,7 @@ If I'm frustrated or cursing: stop, write out exactly what you think I want done
 ## What it does
 
 - **The skill** tells the agent when to stop (you're cursing, shouting, or have corrected it twice; it's about to retry a fix that already failed; its own numbers contradict each other), what a good restatement looks like, and what to do with yes, no, or modify. One check per misunderstanding: after a yes it acts, even if the yes comes with more cursing.
-- **The hook** (plugin only) reads each prompt you send. When it sees cursing, an insult aimed at the agent, or a mostly-caps message, it adds a three-sentence reminder to the agent's context. It never blocks a prompt and stays silent otherwise. It is a POSIX shell script that takes about 35 ms, using `jq` or `python3` to read the prompt when either is installed.
+- **The hook** (plugin only) reads each prompt you send. When it sees cursing, an insult aimed at the agent, or a mostly-caps message, it adds a short reminder to the agent's context. It never blocks a prompt and stays silent otherwise. It is a POSIX shell script that takes about 35 ms, using `jq` or `python3` to read the prompt when either is installed.
 
 ## Why
 
