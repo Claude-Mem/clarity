@@ -45,6 +45,8 @@ claude-mem also stores what its own note-taker spends (`discovery_tokens`). That
 | 2026-09 | 1,123 | 58 | 5.2% |
 | 2026-10 (to the 16th) | 1,035 | 80 | 7.7% |
 
+By hour of day (Pacific time), cursing peaks in the 1 a.m. hour (60 of 351 prompts, 17%) and bottoms out in the 9 a.m. hour (10 of 277, 4%). From midnight to 6 a.m. it runs 13%; afternoons, 10%.
+
 ## What the rule didn't change
 
 How often I curse, and how often it spirals. In Claude Code sessions, comparing the 60 days right before the rule with the 39 days since:
@@ -109,4 +111,4 @@ python3 evidence/spirals.py sample --sample-size 80   # read these and count the
 python3 evidence/spirals.py hook
 ```
 
-Set `--rule-date` to the day you started using the rule. Results go to `spirals-out/summary.json`. Your prompt text is written to `spirals-out/private/`; keep it out of git.
+Set `--rule-date` to the day you started using the rule, and `--timezone` to yours (default `America/Los_Angeles`). Results go to `spirals-out/summary.json`. Your prompt text is written to `spirals-out/private/`; keep it out of git.

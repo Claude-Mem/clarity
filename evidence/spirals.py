@@ -34,6 +34,7 @@ import re
 import sqlite3
 import statistics
 import sys
+from zoneinfo import ZoneInfo
 
 OUTPUT_DIR = "spirals-out"
 SCRATCH_DIR = os.path.join(OUTPUT_DIR, "private")
@@ -43,6 +44,8 @@ OPENROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models"
 
 # Everything before this day is "before the rule". Set with --rule-date.
 RULE_FIRST_VERSION_DATE = dt.datetime(2026, 9, 7, tzinfo=dt.timezone.utc)
+# Your clock, for cursing by hour of day. Set with --timezone.
+LOCAL_TIMEZONE = ZoneInfo("America/Los_Angeles")
 
 # A spiral keeps going while the next curse lands within this many of my prompts and minutes.
 SPIRAL_MAX_PROMPT_GAP = 3
@@ -710,6 +713,14 @@ def command_summary():
         counts = by_month.setdefault(month, dict(human_prompts=0, curse_prompts=0))
         counts["human_prompts"] += 1
         counts["curse_prompts"] += prompt["is_curse"]
+    by_local_hour = {}
+    for prompt in prompts:
+        hour = epoch_ms_to_datetime(prompt["epoch_ms"]).astimezone(LOCAL_TIMEZONE).hour
+        counts = by_local_hour.setdefault(hour, dict(human_prompts=0, curse_prompts=0))
+        counts["human_prompts"] += 1
+        counts["curse_prompts"] += prompt["is_curse"]
+    for counts in by_local_hour.values():
+        counts["curse_rate"] = round(counts["curse_prompts"] / counts["human_prompts"], 3)
     rule_days_after = (max(p["epoch_ms"] for p in prompts) - rule_start_ms) / 86_400_000
     rule_days_before = (rule_start_ms - min(p["epoch_ms"] for p in prompts)) / 86_400_000
 
@@ -722,6 +733,7 @@ def command_summary():
         happy_cursing_prompts_excluded=sum(p["is_happy_cursing"] for p in prompts),
         sessions_with_a_curse=sum(any(p["is_curse"] for p in sp) for sp in sessions.values()),
         sessions=len(sessions), by_month=by_month,
+        timezone=str(LOCAL_TIMEZONE), by_local_hour=dict(sorted(by_local_hour.items())),
         worst_days=sorted(curses_by_day.items(), key=lambda kv: -kv[1])[:8],
         days_before_rule=round(rule_days_before), days_after_rule=round(rule_days_after),
         spirals_all=summarize_spirals(sessions),
@@ -790,13 +802,14 @@ def command_hook(calm_sample_size=2000, seed=2026):
 
 
 def main():
-    global OUTPUT_DIR, SCRATCH_DIR, RESULTS_DIR, RULE_FIRST_VERSION_DATE
+    global OUTPUT_DIR, SCRATCH_DIR, RESULTS_DIR, RULE_FIRST_VERSION_DATE, LOCAL_TIMEZONE
     parser = argparse.ArgumentParser(description="Measure frustration spirals in your claude-mem history.")
     parser.add_argument("command", choices=["all", "prompts", "sample", "transcripts", "summary", "hook"])
     parser.add_argument("--out", default=OUTPUT_DIR, help="output folder (default: spirals-out)")
     parser.add_argument("--rule-date", default=RULE_FIRST_VERSION_DATE.date().isoformat(),
                         help="YYYY-MM-DD you started asking agents to stop and check when you curse")
     parser.add_argument("--exclude-session", action="append", default=[], help="session id to leave out (repeatable)")
+    parser.add_argument("--timezone", default=str(LOCAL_TIMEZONE), help="your IANA time zone, for cursing by hour")
     parser.add_argument("--sample-size", type=int, default=60)
     arguments = parser.parse_args()
 
@@ -805,6 +818,7 @@ def main():
     os.makedirs(SCRATCH_DIR, exist_ok=True)
     RULE_FIRST_VERSION_DATE = dt.datetime.fromisoformat(arguments.rule_date).replace(tzinfo=dt.timezone.utc)
     EXCLUDED_SESSION_IDS.update(arguments.exclude_session)
+    LOCAL_TIMEZONE = ZoneInfo(arguments.timezone)
 
     if arguments.command in ("all", "prompts"):
         command_prompts()
